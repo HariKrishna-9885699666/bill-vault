@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,8 +27,6 @@ import type { Bill, Attachment } from "@/types";
 export function BillDetail({ billId }: { billId: string }) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const removeFn = useServerFn(removeAttachment);
-  const saveFn = useServerFn(saveBills);
   const allBills = useAppSelector((s) => s.bills.items);
   const bill: Bill | undefined = allBills.find((b) => b.id === billId);
   const [active, setActive] = useState(0);
@@ -53,7 +50,7 @@ export function BillDetail({ billId }: { billId: string }) {
     for (const a of bill.attachments) {
       if (a.driveFileId) {
         try {
-          await removeFn({ data: { fileId: a.driveFileId } });
+          await removeAttachment({ fileId: a.driveFileId });
         } catch {
           // ignore — file may already be gone
         }
@@ -61,7 +58,7 @@ export function BillDetail({ billId }: { billId: string }) {
     }
     const updatedBills = allBills.filter((b) => b.id !== bill.id);
     try {
-      await saveFn({ data: { bills: updatedBills } });
+      await saveBills({ bills: updatedBills });
     } catch {
       // non-fatal: Drive sync failed but local state will update
     }

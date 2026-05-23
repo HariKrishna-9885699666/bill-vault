@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,9 +35,6 @@ export function BillForm({ initial, mode = "create" }: Props) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const allBills = useAppSelector((s) => s.bills.items);
-  const upload = useServerFn(uploadAttachment);
-  const save = useServerFn(saveBills);
-
   const [title, setTitle] = useState(initial?.title ?? "");
   const [category, setCategory] = useState<CategoryType>(initial?.category ?? "miscellaneous");
   const [patient, setPatient] = useState<FamilyMember | "">(
@@ -74,7 +70,7 @@ export function BillForm({ initial, mode = "create" }: Props) {
         fd.set("file", pf.file);
         fd.set("category", category);
         if (category === "medical" && patient) fd.set("patient", patient);
-        const result = await upload({ data: fd });
+        const result = await uploadAttachment(fd);
         newAttachments.push({
           id: crypto.randomUUID(),
           fileName: result.name,
@@ -122,7 +118,7 @@ export function BillForm({ initial, mode = "create" }: Props) {
         : [bill, ...allBills];
 
     try {
-      await save({ data: { bills: updatedBills } });
+      await saveBills({ bills: updatedBills });
     } catch (err) {
       const detail = err instanceof Error ? err.message : String(err);
       toast.error("Failed to save to Drive", { description: detail.slice(0, 160) });

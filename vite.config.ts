@@ -1,5 +1,5 @@
 import { defineConfig, loadEnv, type ConfigEnv, type UserConfig } from "vite";
-import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
@@ -27,15 +27,9 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     },
     server: { host: "::", port: 8080 },
     plugins: [
-      tanstackStart({
-        server: { entry: "src/server" },
-        importProtection: {
-          behavior: "error",
-          client: {
-            files: ["**/server/**"],
-            specifiers: ["server-only"],
-          },
-        },
+      TanStackRouterVite({
+        routesDirectory: "src/routes",
+        generatedRouteTree: "src/routeTree.gen.ts",
       }),
       react(),
       tailwindcss(),
