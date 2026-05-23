@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Indigo rounded background -->
+  <rect width="512" height="512" rx="112" fill="#4f46e5"/>
+
+  <!-- Receipt paper (white) -->
+  <rect x="120" y="72" width="272" height="344" rx="20" fill="white" opacity="0.97"/>
+
+  <!-- Header accent bar -->
+  <rect x="120" y="72" width="272" height="44" rx="20" fill="#4f46e5" opacity="0.08"/>
+  <rect x="120" y="96" width="272" height="20" fill="#4f46e5" opacity="0.08"/>
+
+  <!-- Receipt text lines -->
+  <rect x="156" y="148" width="200" height="18" rx="9" fill="#4f46e5" opacity="0.4"/>
+  <rect x="156" y="184" width="140" height="16" rx="8" fill="#4f46e5" opacity="0.28"/>
+  <rect x="156" y="216" width="168" height="16" rx="8" fill="#4f46e5" opacity="0.28"/>
+  <rect x="156" y="248" width="112" height="16" rx="8" fill="#4f46e5" opacity="0.22"/>
+  <rect x="156" y="280" width="152" height="16" rx="8" fill="#4f46e5" opacity="0.22"/>
+
+  <!-- Divider -->
+  <rect x="140" y="312" width="232" height="2" rx="1" fill="#4f46e5" opacity="0.15"/>
+
+  <!-- Total amount line (bolder, prominent) -->
+  <rect x="156" y="326" width="200" height="22" rx="11" fill="#4f46e5" opacity="0.65"/>
+
+  <!-- Rupee symbol accent circle -->
+  <circle cx="360" cy="100" r="26" fill="#4f46e5" opacity="0.12"/>
+  <text x="360" y="108" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#4f46e5" opacity="0.7">₹</text>
+
+  <!-- Perforated / tear bottom of receipt -->
+  <path d="
+    M120 416
+    Q131 404 142 416
+    Q153 428 164 416
+    Q175 404 186 416
+    Q197 428 208 416
+    Q219 404 230 416
+    Q241 428 252 416
+    Q263 404 274 416
+    Q285 428 296 416
+    Q307 404 318 416
+    Q329 428 340 416
+    Q351 404 362 416
+    Q373 428 384 416
+    Q392 416 392 416
+    L392 406
+    L120 406
+    Z
+  " fill="white" opacity="0.97"/>
+
+  <!-- Shadow / depth at bottom of paper -->
+  <path d="
+    M120 406
+    L392 406
+    L392 416
+    Q381 404 370 416
+    Q359 428 348 416
+    Q337 404 326 416
+    Q315 428 304 416
+    Q293 404 282 416
+    Q271 428 260 416
+    Q249 404 238 416
+    Q227 428 216 416
+    Q205 404 194 416
+    Q183 428 172 416
+    Q161 404 150 416
+    Q139 428 128 416
+    Q124 412 120 416
+    Z
+  " fill="#e0e7ff" opacity="0.5"/>
+</svg>
