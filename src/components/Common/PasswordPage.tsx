@@ -2,11 +2,9 @@ import { useAuth } from '@/hooks/use-auth';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
 
 export function PasswordPage() {
   const { login } = useAuth();
-  const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
@@ -15,13 +13,9 @@ export function PasswordPage() {
     setError('');
     try {
       login(password);
-      navigate({ to: '/' });
+      // RootComponent's effect handles redirect once isAuthenticated flips
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("An unknown error occurred");
-      }
+      setError(err instanceof Error ? err.message : "An unknown error occurred");
     }
   };
 
