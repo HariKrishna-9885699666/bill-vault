@@ -1,21 +1,22 @@
+import { useState } from "react";
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { FaHome, FaList, FaPlus, FaCog, FaMoon, FaSun, FaReceipt } from "react-icons/fa";
+import { FaHome, FaList, FaPlus, FaCog, FaMoon, FaSun, FaReceipt, FaInfoCircle } from "react-icons/fa";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { toggleTheme } from "@/store/uiSlice";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { AboutModal } from "@/components/Common/AboutModal";
 
 interface NavItem {
   to: string;
   label: string;
   icon: typeof FaHome;
-  primary?: boolean;
 }
 
 const NAV: NavItem[] = [
   { to: "/", label: "Home", icon: FaHome },
   { to: "/bills", label: "Bills", icon: FaList },
-  { to: "/bills/add", label: "Add", icon: FaPlus, primary: true },
+  { to: "/bills/add", label: "Add", icon: FaPlus },
   { to: "/settings", label: "Settings", icon: FaCog },
 ];
 
@@ -24,6 +25,7 @@ export function AppShell() {
   const theme = useAppSelector((s) => s.ui.theme);
   const router = useRouterState();
   const pathname = router.location.pathname;
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
@@ -60,6 +62,13 @@ export function AppShell() {
               </Link>
             );
           })}
+          <button
+            type="button"
+            onClick={() => setAboutOpen(true)}
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <FaInfoCircle /> About
+          </button>
         </nav>
         <button
           type="button"
@@ -95,8 +104,8 @@ export function AppShell() {
 
       {/* Bottom nav (mobile only) */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur md:hidden">
-        <ul className="flex items-end justify-around px-2">
-          {NAV.map(({ to, label, icon: Icon, primary }) => {
+        <ul className="flex items-center justify-around px-2">
+          {NAV.map(({ to, label, icon: Icon }) => {
             const active = isActive(pathname, to);
             return (
               <li key={to} className="flex-1">
@@ -104,32 +113,39 @@ export function AppShell() {
                   to={to}
                   className={cn(
                     "flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium transition-colors",
-                    active && !primary ? "text-primary" : !primary ? "text-muted-foreground" : "",
+                    active ? "text-primary" : "text-muted-foreground",
                   )}
                 >
-                  {primary ? (
-                    <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg ring-4 ring-background">
-                      <Icon size={20} />
-                    </span>
-                  ) : (
-                    <>
-                      <span
-                        className={cn(
-                          "flex h-8 w-8 items-center justify-center rounded-xl transition-colors",
-                          active ? "bg-primary/15 text-primary" : "text-muted-foreground",
-                        )}
-                      >
-                        <Icon size={17} />
-                      </span>
-                      <span>{label}</span>
-                    </>
-                  )}
+                  <span
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-xl transition-colors",
+                      active ? "bg-primary/15 text-primary" : "text-muted-foreground",
+                    )}
+                  >
+                    <Icon size={17} />
+                  </span>
+                  <span>{label}</span>
                 </Link>
               </li>
             );
           })}
+          {/* About button — after Settings */}
+          <li className="flex-1">
+            <button
+              type="button"
+              onClick={() => setAboutOpen(true)}
+              className="flex w-full flex-col items-center justify-center gap-0.5 py-2 text-[10px] font-medium text-muted-foreground transition-colors"
+            >
+              <span className="flex h-8 w-8 items-center justify-center rounded-xl text-muted-foreground">
+                <FaInfoCircle size={17} />
+              </span>
+              <span>About</span>
+            </button>
+          </li>
         </ul>
       </nav>
+
+      <AboutModal open={aboutOpen} onOpenChange={setAboutOpen} />
     </div>
   );
 }

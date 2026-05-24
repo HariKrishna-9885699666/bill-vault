@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +22,7 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { deleteBill } from "@/store/billSlice";
 import { removeAttachment, saveBills } from "@/services/drive.functions";
 import { useBlobUrl } from "@/hooks/use-blob-url";
-import { FaPen, FaTrash, FaDownload, FaArrowLeft } from "react-icons/fa";
+import { FaPen, FaTrash, FaDownload, FaArrowLeft, FaExpand } from "react-icons/fa";
 import type { Bill, Attachment } from "@/types";
 
 export function BillDetail({ billId }: { billId: string }) {
@@ -30,6 +31,7 @@ export function BillDetail({ billId }: { billId: string }) {
   const allBills = useAppSelector((s) => s.bills.items);
   const bill: Bill | undefined = allBills.find((b) => b.id === billId);
   const [active, setActive] = useState(0);
+  const [lightbox, setLightbox] = useState(false);
 
   if (!bill) {
     return (
@@ -117,17 +119,46 @@ export function BillDetail({ billId }: { billId: string }) {
 
       {bill.attachments.length > 0 && (
         <section className="space-y-3 rounded-2xl border border-border bg-card p-4">
-          <div className="flex h-72 items-center justify-center overflow-hidden rounded-xl bg-muted sm:h-96">
+          {/* Attachment preview — click to open fullscreen */}
+          <div
+            className="relative flex h-72 cursor-zoom-in items-center justify-center overflow-hidden rounded-xl bg-muted sm:h-96"
+            onClick={() => setLightbox(true)}
+          >
             {current?.mimeType.includes("pdf") && current.driveUrl ? (
               <iframe
                 src={current.driveUrl.replace("/view", "/preview")}
                 title={current.fileName}
-                className="h-full w-full"
+                className="pointer-events-none h-full w-full"
               />
             ) : (
               <ActiveAttachmentThumb attachment={current} />
             )}
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); setLightbox(true); }}
+              className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-lg bg-black/50 text-white backdrop-blur hover:bg-black/70"
+              aria-label="View fullscreen"
+            >
+              <FaExpand size={13} />
+            </button>
           </div>
+
+          {/* Lightbox dialog */}
+          <Dialog open={lightbox} onOpenChange={setLightbox}>
+            <DialogContent className="max-h-[95dvh] max-w-[95dvw] overflow-hidden p-0">
+              <div className="flex h-[90dvh] w-full items-center justify-center bg-black">
+                {current?.mimeType.includes("pdf") && current.driveUrl ? (
+                  <iframe
+                    src={current.driveUrl.replace("/view", "/preview")}
+                    title={current.fileName}
+                    className="h-full w-full"
+                  />
+                ) : (
+                  <LightboxThumb attachment={current} />
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
           {bill.attachments.length > 1 && (
             <div className="flex gap-2 overflow-x-auto pb-1">
               {bill.attachments.map((a, i) => (
@@ -208,6 +239,24 @@ function ActiveAttachmentThumb({ attachment }: { attachment: Attachment | undefi
       thumb={thumb}
       mime={attachment?.mimeType ?? ""}
       fileName={attachment?.fileName ?? ""}
+    />
+  );
+}
+
+function LightboxThumb({ attachment }: { attachment: Attachment | undefined }) {
+  const thumb = useBlobUrl(attachment);
+  if (!thumb) {
+    return (
+      <div className="flex items-center justify-center text-sm text-white/60">
+        {attachment?.fileName ?? "No preview"}
+      </div>
+    );
+  }
+  return (
+    <img
+      src={thumb}
+      alt={attachment?.fileName ?? ""}
+      className="max-h-full max-w-full object-contain"
     />
   );
 }

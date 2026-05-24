@@ -13,7 +13,6 @@ import { StoreProvider } from "@/store/StoreProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { AppShell } from "@/components/Layout/AppShell";
 import { InstallPrompt } from "@/components/PWA/InstallPrompt";
-import { AboutModal } from "@/components/Common/AboutModal";
 import { useAppDispatch } from "@/store";
 import { setBills } from "@/store/billSlice";
 import { loadBills } from "@/services/drive.functions";
@@ -130,7 +129,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         <RootComponent />
         <Toaster />
         <InstallPrompt />
-        <AboutModal />
       </StoreProvider>
     </>
   ),

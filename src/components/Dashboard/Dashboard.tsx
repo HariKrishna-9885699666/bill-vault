@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useAppSelector } from "@/store";
-import { CATEGORIES, CATEGORY_MAP } from "@/utils/constants";
+import { CATEGORY_MAP } from "@/utils/constants";
 import { CategoryIcon } from "@/components/Common/CategoryIcon";
 import { BillCard } from "@/components/Bills/BillCard";
 import { EmptyState } from "@/components/Common/EmptyState";
@@ -66,11 +66,6 @@ export function Dashboard() {
           <p className="text-xs uppercase tracking-wide text-muted-foreground">All-time bills</p>
           <p className="mt-2 text-3xl font-bold text-foreground">{bills.length}</p>
           <p className="mt-1 text-xs text-muted-foreground">Across {totalsByCategory.size} categories</p>
-        </div>
-        <div className="rounded-2xl border border-border bg-card p-5">
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">Categories</p>
-          <p className="mt-2 text-3xl font-bold text-foreground">{CATEGORIES.length}</p>
-          <p className="mt-1 text-xs text-muted-foreground">Pre-configured types</p>
         </div>
       </section>
 
