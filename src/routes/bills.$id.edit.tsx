@@ -5,9 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/bills/$id/edit")({
   head: () => ({
-    meta: [
-      { title: "Edit bill — BillVault" },
-    ],
+    meta: [{ title: "Edit bill — BillVault" }],
   }),
   component: EditBillPage,
 });
@@ -19,7 +17,9 @@ function EditBillPage() {
     return (
       <div className="rounded-2xl border border-border bg-card p-10 text-center">
         <p className="text-sm text-muted-foreground">Bill not found.</p>
-        <Button asChild className="mt-4"><Link to="/bills">Back to bills</Link></Button>
+        <Button asChild className="mt-4">
+          <Link to="/bills">Back to bills</Link>
+        </Button>
       </div>
     );
   }

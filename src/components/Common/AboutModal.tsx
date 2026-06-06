@@ -1,9 +1,4 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   FaGithub,
   FaLinkedin,
@@ -76,23 +71,57 @@ export function AboutModal({ open, onOpenChange }: AboutModalProps) {
           <div className="rounded-xl border border-border bg-card">
             <InfoRow icon={<FaGraduationCap size={14} />} label="Education" value="B.Tech (CSIT)" />
             <div className="mx-3 border-t border-border" />
-            <InfoRow icon={<FaMapMarkerAlt size={14} />} label="Location" value="Hyderabad, India" />
+            <InfoRow
+              icon={<FaMapMarkerAlt size={14} />}
+              label="Location"
+              value="Hyderabad, India"
+            />
           </div>
 
           <div className="rounded-xl border border-border bg-card">
-            <LinkRow icon={<FaPhone size={13} />} label="Phone" href="tel:+919885699666" display="+91 98856 99666" />
+            <LinkRow
+              icon={<FaPhone size={13} />}
+              label="Phone"
+              href="tel:+919885699666"
+              display="+91 98856 99666"
+            />
             <div className="mx-3 border-t border-border" />
-            <LinkRow icon={<FaEnvelope size={13} />} label="Email" href="mailto:anemharikrishna@gmail.com" display="anemharikrishna@gmail.com" />
+            <LinkRow
+              icon={<FaEnvelope size={13} />}
+              label="Email"
+              href="mailto:anemharikrishna@gmail.com"
+              display="anemharikrishna@gmail.com"
+            />
           </div>
 
           <div className="rounded-xl border border-border bg-card">
-            <LinkRow icon={<FaGithub size={15} />} label="GitHub" href="https://github.com/HariKrishna-9885699666" display="HariKrishna-9885699666" />
+            <LinkRow
+              icon={<FaGithub size={15} />}
+              label="GitHub"
+              href="https://github.com/HariKrishna-9885699666"
+              display="HariKrishna-9885699666"
+            />
             <div className="mx-3 border-t border-border" />
-            <LinkRow icon={<FaLinkedin size={15} />} label="LinkedIn" href="https://linkedin.com/in/anemharikrishna" display="anemharikrishna" />
+            <LinkRow
+              icon={<FaLinkedin size={15} />}
+              label="LinkedIn"
+              href="https://linkedin.com/in/anemharikrishna"
+              display="anemharikrishna"
+            />
             <div className="mx-3 border-t border-border" />
-            <LinkRow icon={<FaBlog size={15} />} label="Blog" href="https://hashnode.com/@HariKrishna-9885699666" display="hashnode.com/@HariKrishna" />
+            <LinkRow
+              icon={<FaBlog size={15} />}
+              label="Blog"
+              href="https://hashnode.com/@HariKrishna-9885699666"
+              display="hashnode.com/@HariKrishna"
+            />
             <div className="mx-3 border-t border-border" />
-            <LinkRow icon={<FaGlobe size={15} />} label="Portfolio" href="https://harikrishna.is-a-good.dev" display="harikrishna.is-a-good.dev" />
+            <LinkRow
+              icon={<FaGlobe size={15} />}
+              label="Portfolio"
+              href="https://harikrishna.is-a-good.dev"
+              display="harikrishna.is-a-good.dev"
+            />
           </div>
         </div>
       </DialogContent>

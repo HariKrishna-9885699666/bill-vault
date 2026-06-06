@@ -13,10 +13,15 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as PasswordRouteImport } from './routes/password'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ReportsIndexRouteImport } from './routes/reports.index'
 import { Route as BillsIndexRouteImport } from './routes/bills.index'
+import { Route as ReportsAddRouteImport } from './routes/reports.add'
+import { Route as ReportsIdRouteImport } from './routes/reports.$id'
 import { Route as BillsAddRouteImport } from './routes/bills.add'
 import { Route as BillsIdRouteImport } from './routes/bills.$id'
+import { Route as ReportsIdIndexRouteImport } from './routes/reports.$id.index'
 import { Route as BillsIdIndexRouteImport } from './routes/bills.$id.index'
+import { Route as ReportsIdEditRouteImport } from './routes/reports.$id.edit'
 import { Route as BillsIdEditRouteImport } from './routes/bills.$id.edit'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -39,9 +44,24 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReportsIndexRoute = ReportsIndexRouteImport.update({
+  id: '/reports/',
+  path: '/reports/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BillsIndexRoute = BillsIndexRouteImport.update({
   id: '/bills/',
   path: '/bills/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsAddRoute = ReportsAddRouteImport.update({
+  id: '/reports/add',
+  path: '/reports/add',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsIdRoute = ReportsIdRouteImport.update({
+  id: '/reports/$id',
+  path: '/reports/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BillsAddRoute = BillsAddRouteImport.update({
@@ -54,10 +74,20 @@ const BillsIdRoute = BillsIdRouteImport.update({
   path: '/bills/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReportsIdIndexRoute = ReportsIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ReportsIdRoute,
+} as any)
 const BillsIdIndexRoute = BillsIdIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => BillsIdRoute,
+} as any)
+const ReportsIdEditRoute = ReportsIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => ReportsIdRoute,
 } as any)
 const BillsIdEditRoute = BillsIdEditRouteImport.update({
   id: '/edit',
@@ -72,9 +102,14 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/bills/$id': typeof BillsIdRouteWithChildren
   '/bills/add': typeof BillsAddRoute
+  '/reports/$id': typeof ReportsIdRouteWithChildren
+  '/reports/add': typeof ReportsAddRoute
   '/bills/': typeof BillsIndexRoute
+  '/reports/': typeof ReportsIndexRoute
   '/bills/$id/edit': typeof BillsIdEditRoute
+  '/reports/$id/edit': typeof ReportsIdEditRoute
   '/bills/$id/': typeof BillsIdIndexRoute
+  '/reports/$id/': typeof ReportsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -82,9 +117,13 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/bills/add': typeof BillsAddRoute
+  '/reports/add': typeof ReportsAddRoute
   '/bills': typeof BillsIndexRoute
+  '/reports': typeof ReportsIndexRoute
   '/bills/$id/edit': typeof BillsIdEditRoute
+  '/reports/$id/edit': typeof ReportsIdEditRoute
   '/bills/$id': typeof BillsIdIndexRoute
+  '/reports/$id': typeof ReportsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -94,9 +133,14 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/bills/$id': typeof BillsIdRouteWithChildren
   '/bills/add': typeof BillsAddRoute
+  '/reports/$id': typeof ReportsIdRouteWithChildren
+  '/reports/add': typeof ReportsAddRoute
   '/bills/': typeof BillsIndexRoute
+  '/reports/': typeof ReportsIndexRoute
   '/bills/$id/edit': typeof BillsIdEditRoute
+  '/reports/$id/edit': typeof ReportsIdEditRoute
   '/bills/$id/': typeof BillsIdIndexRoute
+  '/reports/$id/': typeof ReportsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -107,9 +151,14 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/bills/$id'
     | '/bills/add'
+    | '/reports/$id'
+    | '/reports/add'
     | '/bills/'
+    | '/reports/'
     | '/bills/$id/edit'
+    | '/reports/$id/edit'
     | '/bills/$id/'
+    | '/reports/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -117,9 +166,13 @@ export interface FileRouteTypes {
     | '/settings'
     | '/sitemap.xml'
     | '/bills/add'
+    | '/reports/add'
     | '/bills'
+    | '/reports'
     | '/bills/$id/edit'
+    | '/reports/$id/edit'
     | '/bills/$id'
+    | '/reports/$id'
   id:
     | '__root__'
     | '/'
@@ -128,9 +181,14 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/bills/$id'
     | '/bills/add'
+    | '/reports/$id'
+    | '/reports/add'
     | '/bills/'
+    | '/reports/'
     | '/bills/$id/edit'
+    | '/reports/$id/edit'
     | '/bills/$id/'
+    | '/reports/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -140,7 +198,10 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   BillsIdRoute: typeof BillsIdRouteWithChildren
   BillsAddRoute: typeof BillsAddRoute
+  ReportsIdRoute: typeof ReportsIdRouteWithChildren
+  ReportsAddRoute: typeof ReportsAddRoute
   BillsIndexRoute: typeof BillsIndexRoute
+  ReportsIndexRoute: typeof ReportsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -173,11 +234,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reports/': {
+      id: '/reports/'
+      path: '/reports'
+      fullPath: '/reports/'
+      preLoaderRoute: typeof ReportsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/bills/': {
       id: '/bills/'
       path: '/bills'
       fullPath: '/bills/'
       preLoaderRoute: typeof BillsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports/add': {
+      id: '/reports/add'
+      path: '/reports/add'
+      fullPath: '/reports/add'
+      preLoaderRoute: typeof ReportsAddRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports/$id': {
+      id: '/reports/$id'
+      path: '/reports/$id'
+      fullPath: '/reports/$id'
+      preLoaderRoute: typeof ReportsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bills/add': {
@@ -194,12 +276,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BillsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reports/$id/': {
+      id: '/reports/$id/'
+      path: '/'
+      fullPath: '/reports/$id/'
+      preLoaderRoute: typeof ReportsIdIndexRouteImport
+      parentRoute: typeof ReportsIdRoute
+    }
     '/bills/$id/': {
       id: '/bills/$id/'
       path: '/'
       fullPath: '/bills/$id/'
       preLoaderRoute: typeof BillsIdIndexRouteImport
       parentRoute: typeof BillsIdRoute
+    }
+    '/reports/$id/edit': {
+      id: '/reports/$id/edit'
+      path: '/edit'
+      fullPath: '/reports/$id/edit'
+      preLoaderRoute: typeof ReportsIdEditRouteImport
+      parentRoute: typeof ReportsIdRoute
     }
     '/bills/$id/edit': {
       id: '/bills/$id/edit'
@@ -224,6 +320,20 @@ const BillsIdRouteChildren: BillsIdRouteChildren = {
 const BillsIdRouteWithChildren =
   BillsIdRoute._addFileChildren(BillsIdRouteChildren)
 
+interface ReportsIdRouteChildren {
+  ReportsIdEditRoute: typeof ReportsIdEditRoute
+  ReportsIdIndexRoute: typeof ReportsIdIndexRoute
+}
+
+const ReportsIdRouteChildren: ReportsIdRouteChildren = {
+  ReportsIdEditRoute: ReportsIdEditRoute,
+  ReportsIdIndexRoute: ReportsIdIndexRoute,
+}
+
+const ReportsIdRouteWithChildren = ReportsIdRoute._addFileChildren(
+  ReportsIdRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PasswordRoute: PasswordRoute,
@@ -231,7 +341,10 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   BillsIdRoute: BillsIdRouteWithChildren,
   BillsAddRoute: BillsAddRoute,
+  ReportsIdRoute: ReportsIdRouteWithChildren,
+  ReportsAddRoute: ReportsAddRoute,
   BillsIndexRoute: BillsIndexRoute,
+  ReportsIndexRoute: ReportsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

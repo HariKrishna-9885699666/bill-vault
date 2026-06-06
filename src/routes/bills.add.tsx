@@ -5,7 +5,10 @@ export const Route = createFileRoute("/bills/add")({
   head: () => ({
     meta: [
       { title: "Add bill — BillVault" },
-      { name: "description", content: "Capture a new bill with attachments backed up to Google Drive." },
+      {
+        name: "description",
+        content: "Capture a new bill with attachments backed up to Google Drive.",
+      },
     ],
   }),
   component: AddBillPage,

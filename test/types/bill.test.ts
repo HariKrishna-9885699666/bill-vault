@@ -82,10 +82,22 @@ describe("Attachment interface", () => {
 describe("CategoryType values", () => {
   it("accepts all 16 valid category strings", () => {
     const cats: CategoryType[] = [
-      "medical", "groceries", "entertainment", "utilities",
-      "rent", "transportation", "dining", "shopping",
-      "education", "insurance", "travel", "electronics",
-      "home_furniture", "personal_care", "taxes", "miscellaneous",
+      "medical",
+      "groceries",
+      "entertainment",
+      "utilities",
+      "rent",
+      "transportation",
+      "dining",
+      "shopping",
+      "education",
+      "insurance",
+      "travel",
+      "electronics",
+      "home_furniture",
+      "personal_care",
+      "taxes",
+      "miscellaneous",
     ];
     expect(cats).toHaveLength(16);
     cats.forEach((c) => expect(typeof c).toBe("string"));
@@ -95,8 +107,13 @@ describe("CategoryType values", () => {
 describe("PaymentMethod values", () => {
   it("accepts all 7 valid payment method strings", () => {
     const methods: PaymentMethod[] = [
-      "cash", "upi", "credit_card", "debit_card",
-      "net_banking", "wallet", "cheque",
+      "cash",
+      "upi",
+      "credit_card",
+      "debit_card",
+      "net_banking",
+      "wallet",
+      "cheque",
     ];
     expect(methods).toHaveLength(7);
     methods.forEach((m) => expect(typeof m).toBe("string"));

@@ -4,6 +4,7 @@ import { useAppSelector } from "@/store";
 import { CATEGORY_MAP } from "@/utils/constants";
 import { CategoryIcon } from "@/components/Common/CategoryIcon";
 import { BillCard } from "@/components/Bills/BillCard";
+import { ReportCard } from "@/components/Reports/ReportCard";
 import { EmptyState } from "@/components/Common/EmptyState";
 import { formatCurrency } from "@/utils/formatters";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import type { CategoryType } from "@/types";
 
 export function Dashboard() {
   const bills = useAppSelector((s) => s.bills.items);
+  const reports = useAppSelector((s) => s.reports.items);
 
   const monthKey = new Date().toISOString().slice(0, 7);
   const thisMonth = useMemo(
@@ -27,10 +29,7 @@ export function Dashboard() {
     return totals;
   }, [thisMonth]);
 
-  const monthTotal = useMemo(
-    () => thisMonth.reduce((sum, b) => sum + b.amount, 0),
-    [thisMonth],
-  );
+  const monthTotal = useMemo(() => thisMonth.reduce((sum, b) => sum + b.amount, 0), [thisMonth]);
 
   const topCategories = useMemo(
     () =>
@@ -41,6 +40,7 @@ export function Dashboard() {
   );
 
   const recent = bills.slice(0, 6);
+  const recentReports = reports.slice(0, 3);
 
   return (
     <div className="space-y-8">
@@ -65,7 +65,9 @@ export function Dashboard() {
         <div className="rounded-2xl border border-border bg-card p-5">
           <p className="text-xs uppercase tracking-wide text-muted-foreground">All-time bills</p>
           <p className="mt-2 text-3xl font-bold text-foreground">{bills.length}</p>
-          <p className="mt-1 text-xs text-muted-foreground">Across {totalsByCategory.size} categories</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Across {totalsByCategory.size} categories
+          </p>
         </div>
       </section>
 
@@ -113,7 +115,10 @@ export function Dashboard() {
       <section>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-base font-semibold text-foreground">Recent bills</h2>
-          <Link to="/bills" className="inline-flex items-center gap-1 text-xs font-medium text-primary">
+          <Link
+            to="/bills"
+            className="inline-flex items-center gap-1 text-xs font-medium text-primary"
+          >
             View all <FaArrowRight />
           </Link>
         </div>
@@ -133,6 +138,37 @@ export function Dashboard() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {recent.map((b) => (
               <BillCard key={b.id} bill={b} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-base font-semibold text-foreground">Recent medical reports</h2>
+          <Link
+            to="/reports"
+            className="inline-flex items-center gap-1 text-xs font-medium text-primary"
+          >
+            View all <FaArrowRight />
+          </Link>
+        </div>
+        {recentReports.length === 0 ? (
+          <EmptyState
+            title="No reports yet"
+            description="Upload medical documents to keep them organized."
+            action={
+              <Button asChild>
+                <Link to="/reports/add">
+                  <FaPlus /> Add report
+                </Link>
+              </Button>
+            }
+          />
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {recentReports.map((r) => (
+              <ReportCard key={r.id} report={r} />
             ))}
           </div>
         )}

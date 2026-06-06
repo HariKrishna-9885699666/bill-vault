@@ -111,19 +111,28 @@ export function AttachmentThumb({
   mime: string;
   fileName: string;
 }) {
-  if (thumb) {
+  const isImage = mime.startsWith("image/");
+  
+  if (thumb && isImage) {
     return (
       <img
         src={thumb}
         alt={fileName}
         className="h-full w-full object-cover"
         loading="lazy"
+        onError={(e) => {
+          // If the image fails to load, hide the image and let the fallback show
+          e.currentTarget.style.display = "none";
+          e.currentTarget.nextElementSibling?.classList.remove("hidden");
+        }}
       />
     );
   }
+
   return (
-    <div className="flex h-full w-full items-center justify-center bg-muted text-muted-foreground">
-      {mime.includes("pdf") ? <FaFilePdf className="text-3xl" /> : <FaImage className="text-3xl" />}
+    <div className="flex h-full w-full flex-col items-center justify-center bg-muted text-muted-foreground p-2 text-center">
+      {mime.includes("pdf") ? <FaFilePdf className="text-3xl text-destructive" /> : <FaImage className="text-3xl" />}
+      <span className="mt-2 text-[10px] truncate w-full px-2" title={fileName}>{fileName}</span>
     </div>
   );
 }

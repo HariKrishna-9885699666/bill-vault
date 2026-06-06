@@ -10,10 +10,22 @@ describe("CategoryIcon", () => {
 
   it("renders without throwing for every supported category", () => {
     const categories = [
-      "medical", "groceries", "entertainment", "utilities",
-      "rent", "transportation", "dining", "shopping",
-      "education", "insurance", "travel", "electronics",
-      "home_furniture", "personal_care", "taxes", "miscellaneous",
+      "medical",
+      "groceries",
+      "entertainment",
+      "utilities",
+      "rent",
+      "transportation",
+      "dining",
+      "shopping",
+      "education",
+      "insurance",
+      "travel",
+      "electronics",
+      "home_furniture",
+      "personal_care",
+      "taxes",
+      "miscellaneous",
     ] as const;
 
     for (const cat of categories) {

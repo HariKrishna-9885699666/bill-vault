@@ -19,12 +19,7 @@ describe("EmptyState", () => {
   });
 
   it("renders an action node when provided", () => {
-    render(
-      <EmptyState
-        title="Empty"
-        action={<button type="button">Add Bill</button>}
-      />,
-    );
+    render(<EmptyState title="Empty" action={<button type="button">Add Bill</button>} />);
     expect(screen.getByRole("button", { name: "Add Bill" })).toBeInTheDocument();
   });
 

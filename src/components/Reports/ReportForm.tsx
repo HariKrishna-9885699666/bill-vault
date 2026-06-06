@@ -13,41 +13,31 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FileUploader, type PendingFile } from "@/components/Common/FileUploader";
-import {
-  CATEGORIES,
-  CURRENCIES,
-  PAYMENT_METHODS,
-  FAMILY_MEMBERS,
-  type FamilyMember,
-} from "@/utils/constants";
-import type { Attachment, Bill, CategoryType, PaymentMethod } from "@/types";
+import { REPORT_TYPES, FAMILY_MEMBERS, type FamilyMember } from "@/utils/constants";
+import type { Attachment, Report, ReportType } from "@/types";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { addBill, updateBill } from "@/store/billSlice";
-import { uploadAttachment, saveBills } from "@/services/drive.functions";
+import { addReport, updateReport } from "@/store/reportSlice";
+import { uploadAttachment, saveReports } from "@/services/drive.functions";
 import { useBlobUrl } from "@/hooks/use-blob-url";
 import { FaSpinner } from "react-icons/fa";
 
 interface Props {
-  initial?: Bill;
+  initial?: Report;
   mode?: "create" | "edit";
 }
 
-export function BillForm({ initial, mode = "create" }: Props) {
+export function ReportForm({ initial, mode = "create" }: Props) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const allBills = useAppSelector((s) => s.bills.items);
+  const allReports = useAppSelector((s) => s.reports.items);
   const [title, setTitle] = useState(initial?.title ?? "");
-  const [category, setCategory] = useState<CategoryType>(initial?.category ?? "miscellaneous");
+  const [reportType, setReportType] = useState<ReportType>(initial?.reportType ?? "lab_test");
   const [patient, setPatient] = useState<FamilyMember | "">(
     (initial?.patient as FamilyMember | undefined) ?? "",
   );
-  const [amount, setAmount] = useState<string>(initial ? String(initial.amount) : "");
-  const [currency, setCurrency] = useState(initial?.currency ?? "INR");
   const [date, setDate] = useState(initial?.date ?? new Date().toISOString().slice(0, 10));
-  const [vendor, setVendor] = useState(initial?.vendor ?? "");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | "">(
-    initial?.paymentMethod ?? "",
-  );
+  const [doctor, setDoctor] = useState(initial?.doctor ?? "");
+  const [hospital, setHospital] = useState(initial?.hospital ?? "");
   const [notes, setNotes] = useState(initial?.notes ?? "");
   const [tagsInput, setTagsInput] = useState(initial?.tags?.join(", ") ?? "");
   const [files, setFiles] = useState<PendingFile[]>([]);
@@ -59,8 +49,7 @@ export function BillForm({ initial, mode = "create" }: Props) {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!title.trim()) return toast.error("Title is required");
-    const amt = Number(amount);
-    if (!amount || Number.isNaN(amt) || amt < 0) return toast.error("Enter a valid amount");
+    if (!patient) return toast.error("Patient is required");
 
     setSubmitting(true);
     const newAttachments: Attachment[] = [...existingAttachments];
@@ -69,8 +58,8 @@ export function BillForm({ initial, mode = "create" }: Props) {
       try {
         const fd = new FormData();
         fd.set("file", pf.file);
-        fd.set("category", category);
-        if (category === "medical" && patient) fd.set("patient", patient);
+        fd.set("category", "_report");
+        if (patient) fd.set("patient", patient);
         const result = await uploadAttachment(fd);
         newAttachments.push({
           id: crypto.randomUUID(),
@@ -95,16 +84,14 @@ export function BillForm({ initial, mode = "create" }: Props) {
       .map((t) => t.trim())
       .filter(Boolean);
 
-    const bill: Bill = {
+    const report: Report = {
       id: initial?.id ?? crypto.randomUUID(),
       title: title.trim(),
-      category,
-      patient: category === "medical" && patient ? patient : undefined,
-      amount: amt,
-      currency,
+      reportType,
+      patient,
       date,
-      vendor: vendor.trim() || undefined,
-      paymentMethod: (paymentMethod || undefined) as PaymentMethod | undefined,
+      doctor: doctor.trim() || undefined,
+      hospital: hospital.trim() || undefined,
       notes: notes.trim() || undefined,
       tags: tags.length ? tags : undefined,
       attachments: newAttachments,
@@ -112,12 +99,13 @@ export function BillForm({ initial, mode = "create" }: Props) {
       updatedAt: now,
     };
 
-    // Build the updated bills array for Drive persistence
-    const updatedBills =
-      mode === "edit" ? allBills.map((b) => (b.id === bill.id ? bill : b)) : [bill, ...allBills];
+    const updatedReports =
+      mode === "edit"
+        ? allReports.map((r) => (r.id === report.id ? report : r))
+        : [report, ...allReports];
 
     try {
-      await saveBills({ bills: updatedBills });
+      await saveReports({ reports: updatedReports });
     } catch (err) {
       const detail = err instanceof Error ? err.message : String(err);
       toast.error("Failed to save to Drive", { description: detail.slice(0, 160) });
@@ -126,14 +114,14 @@ export function BillForm({ initial, mode = "create" }: Props) {
     }
 
     if (mode === "edit") {
-      dispatch(updateBill(bill));
-      toast.success("Bill updated");
+      dispatch(updateReport(report));
+      toast.success("Report updated");
     } else {
-      dispatch(addBill(bill));
-      toast.success("Bill saved");
+      dispatch(addReport(report));
+      toast.success("Report saved");
     }
     setSubmitting(false);
-    navigate({ to: "/bills/$id", params: { id: bill.id } });
+    navigate({ to: "/reports/$id", params: { id: report.id } });
   }
 
   return (
@@ -145,25 +133,19 @@ export function BillForm({ initial, mode = "create" }: Props) {
             id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Apollo Pharmacy — Feb medicines"
+            placeholder="e.g., Complete Blood Count (CBC)"
             required
           />
         </div>
 
         <div>
-          <Label>Category *</Label>
-          <Select
-            value={category}
-            onValueChange={(v) => {
-              setCategory(v as CategoryType);
-              if (v !== "medical") setPatient("");
-            }}
-          >
+          <Label>Report Type *</Label>
+          <Select value={reportType} onValueChange={(v) => setReportType(v as ReportType)}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {CATEGORIES.map((c) => (
+              {REPORT_TYPES.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   {c.label}
                 </SelectItem>
@@ -172,27 +154,28 @@ export function BillForm({ initial, mode = "create" }: Props) {
           </Select>
         </div>
 
-        {category === "medical" && (
-          <div>
-            <Label>Patient</Label>
-            <Select
-              value={patient || "none"}
-              onValueChange={(v) => setPatient(v === "none" ? "" : (v as FamilyMember))}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select patient…" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">—</SelectItem>
-                {FAMILY_MEMBERS.map((m) => (
-                  <SelectItem key={m} value={m}>
-                    {m}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
+        <div>
+          <Label>Patient *</Label>
+          <Select
+            value={patient || "none"}
+            onValueChange={(v) => setPatient(v === "none" ? "" : (v as FamilyMember))}
+            required
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select patient…" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none" disabled>
+                — Select Patient —
+              </SelectItem>
+              {FAMILY_MEMBERS.map((m) => (
+                <SelectItem key={m} value={m}>
+                  {m}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
         <div>
           <Label htmlFor="date">Date *</Label>
@@ -206,63 +189,23 @@ export function BillForm({ initial, mode = "create" }: Props) {
         </div>
 
         <div>
-          <Label htmlFor="amount">Amount *</Label>
+          <Label htmlFor="doctor">Doctor</Label>
           <Input
-            id="amount"
-            type="number"
-            inputMode="decimal"
-            step="0.01"
-            min="0"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            required
+            id="doctor"
+            value={doctor}
+            onChange={(e) => setDoctor(e.target.value)}
+            placeholder="e.g., Dr. Smith"
           />
         </div>
 
         <div>
-          <Label>Currency</Label>
-          <Select value={currency} onValueChange={setCurrency}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {CURRENCIES.map((c) => (
-                <SelectItem key={c} value={c}>
-                  {c}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <Label htmlFor="vendor">Vendor / Store</Label>
+          <Label htmlFor="hospital">Hospital / Clinic / Lab</Label>
           <Input
-            id="vendor"
-            value={vendor}
-            onChange={(e) => setVendor(e.target.value)}
-            placeholder="e.g. BigBasket"
+            id="hospital"
+            value={hospital}
+            onChange={(e) => setHospital(e.target.value)}
+            placeholder="e.g., Apollo Diagnostics"
           />
-        </div>
-
-        <div>
-          <Label>Payment method</Label>
-          <Select
-            value={paymentMethod || "none"}
-            onValueChange={(v) => setPaymentMethod(v === "none" ? "" : (v as PaymentMethod))}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select…" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">—</SelectItem>
-              {PAYMENT_METHODS.map((p) => (
-                <SelectItem key={p.id} value={p.id}>
-                  {p.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
 
         <div className="sm:col-span-2">
@@ -271,12 +214,12 @@ export function BillForm({ initial, mode = "create" }: Props) {
             id="tags"
             value={tagsInput}
             onChange={(e) => setTagsInput(e.target.value)}
-            placeholder="e.g. reimbursable, family"
+            placeholder="e.g. annual_checkup, fasting"
           />
         </div>
 
         <div className="sm:col-span-2">
-          <Label htmlFor="notes">Notes</Label>
+          <Label htmlFor="notes">Notes / Observations</Label>
           <Textarea
             id="notes"
             rows={3}
@@ -304,7 +247,7 @@ export function BillForm({ initial, mode = "create" }: Props) {
       </section>
 
       <div className="flex justify-end gap-2">
-        <Button type="button" variant="ghost" onClick={() => navigate({ to: "/bills" })}>
+        <Button type="button" variant="ghost" onClick={() => navigate({ to: "/reports" })}>
           Cancel
         </Button>
         <Button type="submit" disabled={submitting}>
@@ -315,7 +258,7 @@ export function BillForm({ initial, mode = "create" }: Props) {
           ) : mode === "edit" ? (
             "Save changes"
           ) : (
-            "Save bill"
+            "Save report"
           )}
         </Button>
       </div>

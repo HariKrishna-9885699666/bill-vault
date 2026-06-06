@@ -33,11 +33,15 @@ export function BillFilters() {
           value={filters.category}
           onValueChange={(v) => dispatch(setFilters({ category: v as never }))}
         >
-          <SelectTrigger><SelectValue placeholder="Category" /></SelectTrigger>
+          <SelectTrigger>
+            <SelectValue placeholder="Category" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All categories</SelectItem>
             {CATEGORIES.map((c) => (
-              <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>
+              <SelectItem key={c.id} value={c.id}>
+                {c.label}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -45,11 +49,15 @@ export function BillFilters() {
           value={filters.paymentMethod}
           onValueChange={(v) => dispatch(setFilters({ paymentMethod: v as never }))}
         >
-          <SelectTrigger><SelectValue placeholder="Payment" /></SelectTrigger>
+          <SelectTrigger>
+            <SelectValue placeholder="Payment" />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All payments</SelectItem>
             {PAYMENT_METHODS.map((p) => (
-              <SelectItem key={p.id} value={p.id}>{p.label}</SelectItem>
+              <SelectItem key={p.id} value={p.id}>
+                {p.label}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>

@@ -1,24 +1,24 @@
-import { useState } from 'react';
-import { useAuth } from '@/hooks/use-auth';
+import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { FaReceipt, FaLock, FaEye, FaEyeSlash, FaExclamationCircle } from 'react-icons/fa';
+import { FaReceipt, FaLock, FaEye, FaEyeSlash, FaExclamationCircle } from "react-icons/fa";
 
 export function PasswordPage() {
   const { login } = useAuth();
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
     try {
       login(password);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Incorrect password');
+      setError(err instanceof Error ? err.message : "Incorrect password");
       setLoading(false);
     }
   };
@@ -37,7 +37,9 @@ export function PasswordPage() {
           </div>
           <div className="text-center">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">BillVault</h1>
-            <p className="mt-0.5 text-sm text-muted-foreground">Receipts & bills, securely stored</p>
+            <p className="mt-0.5 text-sm text-muted-foreground">
+              Receipts & bills, securely stored
+            </p>
           </div>
         </div>
 
@@ -54,7 +56,7 @@ export function PasswordPage() {
                 <FaLock size={13} />
               </span>
               <Input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -67,7 +69,7 @@ export function PasswordPage() {
                 onClick={() => setShowPassword((v) => !v)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 tabIndex={-1}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
               </button>
@@ -82,13 +84,13 @@ export function PasswordPage() {
             )}
 
             <Button type="submit" className="w-full" disabled={loading || !password}>
-              {loading ? 'Unlocking…' : 'Unlock'}
+              {loading ? "Unlocking…" : "Unlock"}
             </Button>
           </form>
         </div>
 
         <p className="mt-6 text-center text-xs text-muted-foreground">
-          Built by{' '}
+          Built by{" "}
           <a
             href="https://harikrishna.is-a-good.dev"
             target="_blank"

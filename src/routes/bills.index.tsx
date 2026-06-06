@@ -25,7 +25,8 @@ function BillsPage() {
     const q = filters.search.trim().toLowerCase();
     return bills.filter((b) => {
       if (filters.category !== "all" && b.category !== filters.category) return false;
-      if (filters.paymentMethod !== "all" && b.paymentMethod !== filters.paymentMethod) return false;
+      if (filters.paymentMethod !== "all" && b.paymentMethod !== filters.paymentMethod)
+        return false;
       if (filters.dateFrom && b.date < filters.dateFrom) return false;
       if (filters.dateTo && b.date > filters.dateTo) return false;
       if (filters.minAmount !== undefined && b.amount < filters.minAmount) return false;
@@ -52,7 +53,9 @@ function BillsPage() {
           </p>
         </div>
         <Button asChild>
-          <Link to="/bills/add"><FaPlus /> Add bill</Link>
+          <Link to="/bills/add">
+            <FaPlus /> Add bill
+          </Link>
         </Button>
       </header>
       <BillFilters />
@@ -66,7 +69,11 @@ function BillsPage() {
           }
           action={
             bills.length === 0 ? (
-              <Button asChild><Link to="/bills/add"><FaPlus /> Add bill</Link></Button>
+              <Button asChild>
+                <Link to="/bills/add">
+                  <FaPlus /> Add bill
+                </Link>
+              </Button>
             ) : null
           }
         />

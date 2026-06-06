@@ -1,17 +1,19 @@
-import { useState, useEffect } from 'react';
-import { z } from 'zod';
+import { useState, useEffect } from "react";
+import { z } from "zod";
 
 const passwordSchema = z.string().min(1, "Password is required");
 
 // Module-level singleton — shared across every useAuth() call
 let _isAuthenticated = (() => {
   try {
-    const stored = localStorage.getItem('auth');
+    const stored = localStorage.getItem("auth");
     if (stored) {
       const auth = JSON.parse(atob(stored));
       return !!auth.isAuthenticated;
     }
-  } catch {}
+  } catch (e) {
+    // ignore
+  }
   return false;
 })();
 
@@ -40,7 +42,10 @@ export function useAuth() {
     }
     const correctPassword = import.meta.env.VITE_APP_PASSWORD;
     if (password === correctPassword) {
-      localStorage.setItem('auth', btoa(JSON.stringify({ isAuthenticated: true, timestamp: Date.now() })));
+      localStorage.setItem(
+        "auth",
+        btoa(JSON.stringify({ isAuthenticated: true, timestamp: Date.now() })),
+      );
       setAuth(true);
     } else {
       throw new Error("Incorrect password");
@@ -48,7 +53,7 @@ export function useAuth() {
   };
 
   const logout = () => {
-    localStorage.removeItem('auth');
+    localStorage.removeItem("auth");
     setAuth(false);
   };
 

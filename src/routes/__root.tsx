@@ -6,7 +6,7 @@ import {
   HeadContent,
   Outlet,
 } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { StoreProvider } from "@/store/StoreProvider";
@@ -15,7 +15,8 @@ import { AppShell } from "@/components/Layout/AppShell";
 import { InstallPrompt } from "@/components/PWA/InstallPrompt";
 import { useAppDispatch } from "@/store";
 import { setBills } from "@/store/billSlice";
-import { loadBills } from "@/services/drive.functions";
+import { setReports } from "@/store/reportSlice";
+import { loadBills, loadReports } from "@/services/drive.functions";
 
 function NotFoundComponent() {
   return (
@@ -79,35 +80,47 @@ function RootComponent() {
   const navigate = useNavigate();
   const routerState = useRouterState();
   const dispatch = useAppDispatch();
+  const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
-    const unauthenticatedPath = routerState.location.pathname !== '/password';
+    const unauthenticatedPath = routerState.location.pathname !== "/password";
     if (!isAuthenticated && unauthenticatedPath) {
-      navigate({ to: '/password', replace: true });
+      navigate({ to: "/password", replace: true });
     }
     if (isAuthenticated && !unauthenticatedPath) {
-      navigate({ to: '/', replace: true });
+      navigate({ to: "/", replace: true });
     }
   }, [isAuthenticated, navigate, routerState.location.pathname]);
 
   useEffect(() => {
     if (isAuthenticated) {
-      loadBills()
-        .then((bills) => {
-          dispatch(setBills(bills));
-        })
-        .catch((err) => {
-          console.error("Failed to load bills:", err);
-        });
+      setIsFetching(true);
+      Promise.all([
+        loadBills()
+          .then((bills) => dispatch(setBills(bills)))
+          .catch((err) => console.error("Failed to load bills:", err)),
+        loadReports()
+          .then((reports) => dispatch(setReports(reports)))
+          .catch((err) => console.error("Failed to load reports:", err)),
+      ]).finally(() => setIsFetching(false));
     }
   }, [dispatch, isAuthenticated]);
 
-  if (!isAuthenticated && routerState.location.pathname !== '/password') {
+  if (!isAuthenticated && routerState.location.pathname !== "/password") {
     return null;
   }
 
-  if (isAuthenticated && routerState.location.pathname === '/password') {
+  if (isAuthenticated && routerState.location.pathname === "/password") {
     return null;
+  }
+
+  if (isAuthenticated && isFetching) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background gap-4">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <p className="animate-pulse text-sm font-medium text-muted-foreground">Syncing with Drive...</p>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {

@@ -16,8 +16,15 @@ import {
   FaCut,
   FaFileInvoice,
   FaBox,
+  FaFlask,
+  FaXRay,
+  FaBrain,
+  FaPrescriptionBottleAlt,
+  FaProcedures,
+  FaStethoscope,
+  FaFileAlt,
 } from "react-icons/fa";
-import type { CategoryType, PaymentMethod } from "@/types";
+import type { CategoryType, PaymentMethod, ReportType } from "@/types";
 
 export interface CategoryMeta {
   id: CategoryType;
@@ -39,7 +46,12 @@ export const CATEGORIES: CategoryMeta[] = [
   { id: "education", label: "Education", icon: FaBook, token: "cat-education" },
   { id: "insurance", label: "Insurance", icon: FaShieldAlt, token: "cat-insurance" },
   { id: "travel", label: "Travel & Vacation", icon: FaPlane, token: "cat-travel" },
-  { id: "electronics", label: "Electronics & Gadgets", icon: FaMobileAlt, token: "cat-electronics" },
+  {
+    id: "electronics",
+    label: "Electronics & Gadgets",
+    icon: FaMobileAlt,
+    token: "cat-electronics",
+  },
   { id: "home_furniture", label: "Home & Furniture", icon: FaCouch, token: "cat-home-furniture" },
   { id: "personal_care", label: "Personal Care", icon: FaCut, token: "cat-personal-care" },
   { id: "taxes", label: "Taxes & Government", icon: FaFileInvoice, token: "cat-taxes" },
@@ -68,6 +80,36 @@ export const CURRENCIES = ["INR", "USD", "EUR", "GBP"];
 
 export const FAMILY_MEMBERS = ["Hari", "Monika", "Divith", "Father", "Mother"] as const;
 export type FamilyMember = (typeof FAMILY_MEMBERS)[number];
+
+export interface ReportTypeMeta {
+  id: ReportType;
+  label: string;
+  icon: IconType;
+  token: string;
+}
+
+export const REPORT_TYPES: ReportTypeMeta[] = [
+  { id: "lab_test", label: "Lab Test", icon: FaFlask, token: "cat-medical" },
+  { id: "xray", label: "X-Ray", icon: FaXRay, token: "cat-medical" },
+  { id: "scan", label: "Scan (CT/MRI/USG)", icon: FaBrain, token: "cat-medical" },
+  {
+    id: "prescription",
+    label: "Prescription",
+    icon: FaPrescriptionBottleAlt,
+    token: "cat-medical",
+  },
+  { id: "discharge_summary", label: "Discharge Summary", icon: FaProcedures, token: "cat-medical" },
+  { id: "consultation", label: "Consultation", icon: FaStethoscope, token: "cat-medical" },
+  { id: "other", label: "Other", icon: FaFileAlt, token: "cat-medical" },
+];
+
+export const REPORT_TYPE_MAP: Record<ReportType, ReportTypeMeta> = REPORT_TYPES.reduce(
+  (acc, r) => {
+    acc[r.id] = r;
+    return acc;
+  },
+  {} as Record<ReportType, ReportTypeMeta>,
+);
 
 export const MAX_FILES_PER_BILL = 5;
 export const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;

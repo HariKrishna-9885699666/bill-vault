@@ -56,3 +56,27 @@ export interface Bill {
   createdAt: string;
   updatedAt: string;
 }
+
+export type ReportType =
+  | "lab_test"
+  | "xray"
+  | "scan"
+  | "prescription"
+  | "discharge_summary"
+  | "consultation"
+  | "other";
+
+export interface Report {
+  id: string;
+  title: string;
+  reportType: ReportType;
+  patient: string;
+  date: string;
+  doctor?: string;
+  hospital?: string;
+  notes?: string;
+  tags?: string[];
+  attachments: Attachment[];
+  createdAt: string;
+  updatedAt: string;
+}

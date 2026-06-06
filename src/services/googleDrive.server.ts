@@ -1,4 +1,4 @@
-import type { Bill } from "@/types";
+import type { Bill, Report } from "@/types";
 
 const GOOGLE_API_BASE = "https://www.googleapis.com";
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
@@ -25,8 +25,7 @@ async function getServiceAccountToken(json: string): Promise<string> {
     exp: now + 3600,
   };
 
-  const b64url = (obj: object) =>
-    Buffer.from(JSON.stringify(obj)).toString("base64url");
+  const b64url = (obj: object) => Buffer.from(JSON.stringify(obj)).toString("base64url");
   const header = { alg: "RS256", typ: "JWT" };
   const signingInput = `${b64url(header)}.${b64url(claim)}`;
 
@@ -167,10 +166,22 @@ async function ensureFolder(name: string, parentId?: string): Promise<string> {
   return createFolder(name, parentId);
 }
 
+// ── Root Folders ─────────────────────────────────────────────────────────────
+
+async function ensureBillsRootFolder(): Promise<string> {
+  const root = await ensureFolder("BillVault");
+  return ensureFolder("Bills", root);
+}
+
+async function ensureReportsRootFolder(): Promise<string> {
+  const root = await ensureFolder("BillVault");
+  return ensureFolder("Reports", root);
+}
+
 /** Returns the Drive folder ID where attachments for this category (and optionally patient) go. */
 export async function ensureCategoryFolder(category: string, patient?: string): Promise<string> {
-  const root = await ensureFolder("BillVault");
-  const catFolder = await ensureFolder(category, root);
+  const billsRoot = await ensureBillsRootFolder();
+  const catFolder = await ensureFolder(category, billsRoot);
   if (patient) {
     return ensureFolder(patient, catFolder);
   }
@@ -217,7 +228,18 @@ export async function uploadFileToDrive(
   category: string,
   patient?: string,
 ): Promise<DriveUploadResult> {
-  const folderId = await ensureCategoryFolder(category, patient);
+  // If category is "medical" AND we're uploading a report, this gets tricky because 
+  // we now use `uploadFileToDrive` for both bills and reports.
+  // Wait, in `ReportForm.tsx` I hardcoded `category: "medical"`. 
+  // Let's check if the caller is for a report. Actually, we should probably add a parameter 
+  // or change how ReportForm uploads to use the reports folder!
+  // I'll adjust this function to check a special category name.
+  let folderId = "";
+  if (category === "_report") {
+    folderId = await ensureReportFolder(patient || "Unknown");
+  } else {
+    folderId = await ensureCategoryFolder(category, patient);
+  }
 
   const boundary = `boundary_${Math.random().toString(36).slice(2)}`;
   const metadata = { name: fileName, parents: [folderId] };
@@ -253,8 +275,7 @@ export async function uploadFileToDrive(
   return {
     fileId: data.id,
     webViewLink: data.webViewLink ?? `https://drive.google.com/file/d/${data.id}/view`,
-    thumbnailLink:
-      data.thumbnailLink ?? `https://drive.google.com/thumbnail?id=${data.id}&sz=w400`,
+    thumbnailLink: data.thumbnailLink ?? `https://drive.google.com/thumbnail?id=${data.id}&sz=w400`,
     mimeType: data.mimeType,
     name: data.name,
     size: Number(data.size ?? 0),
@@ -271,8 +292,8 @@ let _billsFileId: string | null | undefined = undefined; // undefined = not yet 
 
 async function findBillsFileId(): Promise<string | null> {
   if (_billsFileId !== undefined) return _billsFileId;
-  const root = await ensureFolder("BillVault");
-  const q = `name='bills.json' and '${root}' in parents and trashed=false`;
+  const billsRoot = await ensureBillsRootFolder();
+  const q = `name='bills.json' and '${billsRoot}' in parents and trashed=false`;
   const res = await driveFetch(
     `/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id)&pageSize=1`,
   );
@@ -295,7 +316,7 @@ export async function loadBillsFromDrive(): Promise<Bill[]> {
 }
 
 export async function saveBillsToDrive(bills: Bill[]): Promise<void> {
-  const root = await ensureFolder("BillVault");
+  const billsRoot = await ensureBillsRootFolder();
   const content = JSON.stringify(bills);
   const bytes = new TextEncoder().encode(content);
   const boundary = `boundary_${Math.random().toString(36).slice(2)}`;
@@ -304,26 +325,84 @@ export async function saveBillsToDrive(bills: Bill[]): Promise<void> {
 
   if (existingId) {
     const body = buildMultipart(boundary, { name: "bills.json" }, "application/json", bytes);
-    await driveFetch(
-      `/upload/drive/v3/files/${existingId}?uploadType=multipart`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": `multipart/related; boundary=${boundary}` },
-        body: body as BodyInit,
-      },
-    );
+    await driveFetch(`/upload/drive/v3/files/${existingId}?uploadType=multipart`, {
+      method: "PATCH",
+      headers: { "Content-Type": `multipart/related; boundary=${boundary}` },
+      body: body as BodyInit,
+    });
   } else {
-    const metadata = { name: "bills.json", parents: [root] };
+    const metadata = { name: "bills.json", parents: [billsRoot] };
     const body = buildMultipart(boundary, metadata, "application/json", bytes);
-    const res = await driveFetch(
-      `/upload/drive/v3/files?uploadType=multipart&fields=id`,
-      {
-        method: "POST",
-        headers: { "Content-Type": `multipart/related; boundary=${boundary}` },
-        body: body as BodyInit,
-      },
-    );
+    const res = await driveFetch(`/upload/drive/v3/files?uploadType=multipart&fields=id`, {
+      method: "POST",
+      headers: { "Content-Type": `multipart/related; boundary=${boundary}` },
+      body: body as BodyInit,
+    });
     const data = (await res.json()) as { id: string };
     _billsFileId = data.id;
+  }
+}
+
+// ── Report folder structure: BillVault/Reports/{patient}/ ─────────────
+
+export async function ensureReportFolder(patient: string): Promise<string> {
+  const reportsRoot = await ensureReportsRootFolder();
+  return ensureFolder(patient, reportsRoot);
+}
+
+// ── reports.json persistence ─────────────────────────────────────────────────
+
+let _reportsFileId: string | null | undefined = undefined;
+
+async function findReportsFileId(): Promise<string | null> {
+  if (_reportsFileId !== undefined) return _reportsFileId;
+  const reportsRoot = await ensureReportsRootFolder();
+  const q = `name='reports.json' and '${reportsRoot}' in parents and trashed=false`;
+  const res = await driveFetch(
+    `/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id)&pageSize=1`,
+  );
+  const data = (await res.json()) as { files?: { id: string }[] };
+  _reportsFileId = data.files?.[0]?.id ?? null;
+  return _reportsFileId;
+}
+
+export async function loadReportsFromDrive(): Promise<Report[]> {
+  try {
+    const fileId = await findReportsFileId();
+    if (!fileId) return [];
+    const res = await driveFetch(`/drive/v3/files/${fileId}?alt=media`);
+    const text = await res.text();
+    return JSON.parse(text) as Report[];
+  } catch (err) {
+    console.error("[Drive] loadReportsFromDrive failed:", err);
+    return [];
+  }
+}
+
+export async function saveReportsToDrive(reports: Report[]): Promise<void> {
+  const reportsRoot = await ensureReportsRootFolder();
+  const content = JSON.stringify(reports);
+  const bytes = new TextEncoder().encode(content);
+  const boundary = `boundary_${Math.random().toString(36).slice(2)}`;
+
+  const existingId = await findReportsFileId();
+
+  if (existingId) {
+    const body = buildMultipart(boundary, { name: "reports.json" }, "application/json", bytes);
+    await driveFetch(`/upload/drive/v3/files/${existingId}?uploadType=multipart`, {
+      method: "PATCH",
+      headers: { "Content-Type": `multipart/related; boundary=${boundary}` },
+      body: body as BodyInit,
+    });
+  } else {
+    const metadata = { name: "reports.json", parents: [reportsRoot] };
+    const body = buildMultipart(boundary, metadata, "application/json", bytes);
+    const res = await driveFetch(`/upload/drive/v3/files?uploadType=multipart&fields=id`, {
+      method: "POST",
+      headers: { "Content-Type": `multipart/related; boundary=${boundary}` },
+      body: body as BodyInit,
+    });
+    const data = (await res.json()) as { id: string };
+    _reportsFileId = data.id;
   }
 }

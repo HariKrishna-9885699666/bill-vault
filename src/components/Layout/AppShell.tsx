@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { FaHome, FaList, FaPlus, FaCog, FaMoon, FaSun, FaReceipt, FaInfoCircle } from "react-icons/fa";
+import {
+  FaHome,
+  FaList,
+  FaPlus,
+  FaCog,
+  FaMoon,
+  FaSun,
+  FaReceipt,
+  FaInfoCircle,
+  FaFileMedical,
+} from "react-icons/fa";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { toggleTheme } from "@/store/uiSlice";
 import { useEffect } from "react";
@@ -16,6 +26,7 @@ interface NavItem {
 const NAV: NavItem[] = [
   { to: "/", label: "Home", icon: FaHome },
   { to: "/bills", label: "Bills", icon: FaList },
+  { to: "/reports", label: "Reports", icon: FaFileMedical },
   { to: "/bills/add", label: "Add", icon: FaPlus },
   { to: "/settings", label: "Settings", icon: FaCog },
 ];

@@ -98,10 +98,7 @@ function SettingsPage() {
             <Label className="text-base">Dark mode</Label>
             <p className="text-sm text-muted-foreground">Switch between light and dark theme.</p>
           </div>
-          <Switch
-            checked={theme === "dark"}
-            onCheckedChange={() => dispatch(toggleTheme())}
-          />
+          <Switch checked={theme === "dark"} onCheckedChange={() => dispatch(toggleTheme())} />
         </div>
       </section>
 

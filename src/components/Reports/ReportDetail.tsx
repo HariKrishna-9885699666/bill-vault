@@ -14,45 +14,44 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { CategoryIcon } from "@/components/Common/CategoryIcon";
 import { AttachmentThumb } from "@/components/Common/FileUploader";
-import { CATEGORY_MAP, PAYMENT_METHODS } from "@/utils/constants";
-import { formatCurrency, formatDate, formatBytes } from "@/utils/formatters";
+import { REPORT_TYPE_MAP } from "@/utils/constants";
+import { formatDate, formatBytes } from "@/utils/formatters";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { deleteBill } from "@/store/billSlice";
-import { removeAttachment, saveBills } from "@/services/drive.functions";
+import { deleteReport } from "@/store/reportSlice";
+import { removeAttachment, saveReports } from "@/services/drive.functions";
 import { useBlobUrl } from "@/hooks/use-blob-url";
-import { FaPen, FaTrash, FaDownload, FaArrowLeft, FaExpand, FaSpinner } from "react-icons/fa";
-import type { Bill, Attachment } from "@/types";
+import { FaPen, FaTrash, FaDownload, FaArrowLeft, FaExpand, FaUserInjured, FaSpinner } from "react-icons/fa";
+import type { Report, Attachment } from "@/types";
 
-export function BillDetail({ billId }: { billId: string }) {
+export function ReportDetail({ reportId }: { reportId: string }) {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const allBills = useAppSelector((s) => s.bills.items);
-  const bill: Bill | undefined = allBills.find((b) => b.id === billId);
+  const allReports = useAppSelector((s) => s.reports.items);
+  const report: Report | undefined = allReports.find((r) => r.id === reportId);
   const [active, setActive] = useState(0);
   const [lightbox, setLightbox] = useState(false);
 
   const [isDeleting, setIsDeleting] = useState(false);
 
-  if (!bill) {
+  if (!report) {
     return (
       <div className="rounded-2xl border border-border bg-card p-10 text-center">
-        <p className="text-sm text-muted-foreground">Bill not found.</p>
+        <p className="text-sm text-muted-foreground">Report not found.</p>
         <Button asChild className="mt-4">
-          <Link to="/bills">Back to bills</Link>
+          <Link to="/reports">Back to reports</Link>
         </Button>
       </div>
     );
   }
 
-  const meta = CATEGORY_MAP[bill.category];
-  const payment = PAYMENT_METHODS.find((p) => p.id === bill.paymentMethod);
+  const meta = REPORT_TYPE_MAP[report.reportType];
+  const Icon = meta.icon;
 
   async function handleDelete() {
-    if (!bill) return;
+    if (!report) return;
     setIsDeleting(true);
-    for (const a of bill.attachments) {
+    for (const a of report.attachments) {
       if (a.driveFileId) {
         try {
           await removeAttachment({ fileId: a.driveFileId });
@@ -61,31 +60,31 @@ export function BillDetail({ billId }: { billId: string }) {
         }
       }
     }
-    const updatedBills = allBills.filter((b) => b.id !== bill.id);
+    const updatedReports = allReports.filter((r) => r.id !== report.id);
     try {
-      await saveBills({ bills: updatedBills });
+      await saveReports({ reports: updatedReports });
     } catch {
-      // non-fatal: Drive sync failed but local state will update
+      // non-fatal
     }
-    dispatch(deleteBill(bill.id));
-    toast.success("Bill deleted");
+    dispatch(deleteReport(report.id));
+    toast.success("Report deleted");
     setIsDeleting(false);
-    navigate({ to: "/bills" });
+    navigate({ to: "/reports" });
   }
 
-  const current = bill.attachments[active];
+  const current = report.attachments[active];
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <Button variant="ghost" size="sm" asChild>
-          <Link to="/bills">
+          <Link to="/reports">
             <FaArrowLeft /> Back
           </Link>
         </Button>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" asChild>
-            <Link to="/bills/$id/edit" params={{ id: bill.id }}>
+            <Link to="/reports/$id/edit" params={{ id: report.id }}>
               <FaPen /> Edit
             </Link>
           </Button>
@@ -97,9 +96,9 @@ export function BillDetail({ billId }: { billId: string }) {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete this bill?</AlertDialogTitle>
+                <AlertDialogTitle>Delete this report?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This removes the bill and its attachments from Google Drive. This cannot be
+                  This removes the report and its attachments from Google Drive. This cannot be
                   undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
@@ -121,23 +120,26 @@ export function BillDetail({ billId }: { billId: string }) {
       </div>
 
       <header className="flex flex-wrap items-start gap-4 rounded-2xl border border-border bg-card p-5">
-        <CategoryIcon category={bill.category} size="lg" />
+        <div
+          className="flex h-14 w-14 items-center justify-center rounded-xl text-2xl text-white"
+          style={{ backgroundColor: "var(--cat-medical)" }}
+        >
+          <Icon />
+        </div>
         <div className="min-w-0 flex-1">
           <p className="text-xs uppercase tracking-wide text-muted-foreground">{meta.label}</p>
-          <h1 className="text-xl font-bold text-foreground sm:text-2xl">{bill.title}</h1>
+          <h1 className="text-xl font-bold text-foreground sm:text-2xl">{report.title}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {bill.vendor ? `${bill.vendor} · ` : ""}
-            {formatDate(bill.date, "EEEE, MMM d, yyyy")}
+            {formatDate(report.date, "EEEE, MMM d, yyyy")}
           </p>
         </div>
-        <p className="text-2xl font-bold text-foreground">
-          {formatCurrency(bill.amount, bill.currency)}
+        <p className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-sm font-medium text-foreground">
+          <FaUserInjured /> {report.patient}
         </p>
       </header>
 
-      {bill.attachments.length > 0 && (
+      {report.attachments.length > 0 && (
         <section className="space-y-3 rounded-2xl border border-border bg-card p-4">
-          {/* Attachment preview — click to open fullscreen */}
           <div
             className="relative flex h-72 cursor-zoom-in items-center justify-center overflow-hidden rounded-xl bg-muted sm:h-96"
             onClick={() => setLightbox(true)}
@@ -164,7 +166,6 @@ export function BillDetail({ billId }: { billId: string }) {
             </button>
           </div>
 
-          {/* Lightbox dialog */}
           <Dialog open={lightbox} onOpenChange={setLightbox}>
             <DialogContent className="max-h-[95dvh] max-w-[95dvw] overflow-hidden p-0">
               <div className="flex h-[90dvh] w-full items-center justify-center bg-black">
@@ -180,9 +181,9 @@ export function BillDetail({ billId }: { billId: string }) {
               </div>
             </DialogContent>
           </Dialog>
-          {bill.attachments.length > 1 && (
+          {report.attachments.length > 1 && (
             <div className="flex gap-2 overflow-x-auto pb-1">
-              {bill.attachments.map((a, i) => (
+              {report.attachments.map((a, i) => (
                 <StripThumb
                   key={a.id}
                   attachment={a}
@@ -211,18 +212,16 @@ export function BillDetail({ billId }: { billId: string }) {
       )}
 
       <section className="grid gap-4 rounded-2xl border border-border bg-card p-5 sm:grid-cols-2">
-        <Detail label="Amount" value={formatCurrency(bill.amount, bill.currency)} />
-        <Detail label="Category" value={meta.label} />
-        {bill.patient && <Detail label="Patient" value={bill.patient} />}
-        <Detail label="Date" value={formatDate(bill.date, "MMM d, yyyy")} />
-        <Detail label="Vendor" value={bill.vendor || "—"} />
-        <Detail label="Payment method" value={payment?.label || "—"} />
-        <Detail label="Currency" value={bill.currency} />
-        {bill.tags && bill.tags.length > 0 && (
+        <Detail label="Report Type" value={meta.label} />
+        <Detail label="Patient" value={report.patient} />
+        <Detail label="Date" value={formatDate(report.date, "MMM d, yyyy")} />
+        <Detail label="Doctor" value={report.doctor || "—"} />
+        <Detail label="Hospital/Lab" value={report.hospital || "—"} />
+        {report.tags && report.tags.length > 0 && (
           <div className="sm:col-span-2">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Tags</p>
             <div className="mt-1 flex flex-wrap gap-1.5">
-              {bill.tags.map((t) => (
+              {report.tags.map((t) => (
                 <span
                   key={t}
                   className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-foreground"
@@ -233,10 +232,10 @@ export function BillDetail({ billId }: { billId: string }) {
             </div>
           </div>
         )}
-        {bill.notes && (
+        {report.notes && (
           <div className="sm:col-span-2">
             <p className="text-xs uppercase tracking-wide text-muted-foreground">Notes</p>
-            <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">{bill.notes}</p>
+            <p className="mt-1 whitespace-pre-wrap text-sm text-foreground">{report.notes}</p>
           </div>
         )}
       </section>

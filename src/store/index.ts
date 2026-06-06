@@ -42,9 +42,10 @@ const storage = {
   },
 };
 import bills from "./billSlice";
+import reports from "./reportSlice";
 import ui from "./uiSlice";
 
-const rootReducer = combineReducers({ bills, ui });
+const rootReducer = combineReducers({ bills, reports, ui });
 
 const persistConfig = {
   key: "billvault",

@@ -1,4 +1,4 @@
-import type { Bill } from "@/types";
+import type { Bill, Report } from "@/types";
 
 export interface DriveUploadResult {
   fileId: string;
@@ -41,6 +41,22 @@ export async function loadBills(): Promise<Bill[]> {
 
 export async function saveBills(data: { bills: Bill[] }): Promise<{ ok: boolean }> {
   const res = await fetch(`${BASE}/bills`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json() as Promise<{ ok: boolean }>;
+}
+
+export async function loadReports(): Promise<Report[]> {
+  const res = await fetch(`${BASE}/reports`);
+  if (!res.ok) throw new Error(await res.text());
+  return res.json() as Promise<Report[]>;
+}
+
+export async function saveReports(data: { reports: Report[] }): Promise<{ ok: boolean }> {
+  const res = await fetch(`${BASE}/reports`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
