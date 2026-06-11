@@ -117,7 +117,7 @@
   --cat-groceries: oklch(0.78 0.14 140);
   --cat-entertainment: oklch(0.72 0.17 305);
   --cat-utilities: oklch(0.83 0.15 90);
-  --cat-rent: oklch(0.76 0.10 250);
+  --cat-rent: oklch(0.76 0.1 250);
   --cat-transportation: oklch(0.75 0.13 220);
   --cat-dining: oklch(0.78 0.16 50);
   --cat-shopping: oklch(0.78 0.14 340);
@@ -125,9 +125,9 @@
   --cat-insurance: oklch(0.72 0.12 200);
   --cat-travel: oklch(0.78 0.14 240);
   --cat-electronics: oklch(0.72 0.12 280);
-  --cat-home-furniture: oklch(0.78 0.10 60);
-  --cat-personal-care: oklch(0.82 0.10 350);
-  --cat-taxes: oklch(0.70 0.08 30);
+  --cat-home-furniture: oklch(0.78 0.1 60);
+  --cat-personal-care: oklch(0.82 0.1 350);
+  --cat-taxes: oklch(0.7 0.08 30);
   --cat-misc: oklch(0.75 0.04 260);
 }
 

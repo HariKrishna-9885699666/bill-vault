@@ -112,7 +112,7 @@ export function AttachmentThumb({
   fileName: string;
 }) {
   const isImage = mime.startsWith("image/");
-  
+
   if (thumb && isImage) {
     return (
       <img
@@ -131,8 +131,14 @@ export function AttachmentThumb({
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center bg-muted text-muted-foreground p-2 text-center">
-      {mime.includes("pdf") ? <FaFilePdf className="text-3xl text-destructive" /> : <FaImage className="text-3xl" />}
-      <span className="mt-2 text-[10px] truncate w-full px-2" title={fileName}>{fileName}</span>
+      {mime.includes("pdf") ? (
+        <FaFilePdf className="text-3xl text-destructive" />
+      ) : (
+        <FaImage className="text-3xl" />
+      )}
+      <span className="mt-2 text-[10px] truncate w-full px-2" title={fileName}>
+        {fileName}
+      </span>
     </div>
   );
 }

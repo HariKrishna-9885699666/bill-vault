@@ -21,7 +21,15 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { deleteReport } from "@/store/reportSlice";
 import { removeAttachment, saveReports } from "@/services/drive.functions";
 import { useBlobUrl } from "@/hooks/use-blob-url";
-import { FaPen, FaTrash, FaDownload, FaArrowLeft, FaExpand, FaUserInjured, FaSpinner } from "react-icons/fa";
+import {
+  FaPen,
+  FaTrash,
+  FaDownload,
+  FaArrowLeft,
+  FaExpand,
+  FaUserInjured,
+  FaSpinner,
+} from "react-icons/fa";
 import type { Report, Attachment } from "@/types";
 
 export function ReportDetail({ reportId }: { reportId: string }) {

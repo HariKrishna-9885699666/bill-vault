@@ -228,10 +228,10 @@ export async function uploadFileToDrive(
   category: string,
   patient?: string,
 ): Promise<DriveUploadResult> {
-  // If category is "medical" AND we're uploading a report, this gets tricky because 
+  // If category is "medical" AND we're uploading a report, this gets tricky because
   // we now use `uploadFileToDrive` for both bills and reports.
-  // Wait, in `ReportForm.tsx` I hardcoded `category: "medical"`. 
-  // Let's check if the caller is for a report. Actually, we should probably add a parameter 
+  // Wait, in `ReportForm.tsx` I hardcoded `category: "medical"`.
+  // Let's check if the caller is for a report. Actually, we should probably add a parameter
   // or change how ReportForm uploads to use the reports folder!
   // I'll adjust this function to check a special category name.
   let folderId = "";

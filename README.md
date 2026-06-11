@@ -24,20 +24,20 @@ Built with **TanStack Start** (SSR), **React 19**, **Redux Toolkit**, **Tailwind
 
 ## Tech Stack
 
-| Layer | Library / Tool |
-|---|---|
-| Framework | [TanStack Start](https://tanstack.com/start) v1 (SSR + Server Functions) |
-| Routing | [TanStack Router](https://tanstack.com/router) v1 (file-based) |
-| UI | React 19, Radix UI primitives, Tailwind CSS v4 |
-| State | Redux Toolkit + redux-persist (UI preferences only) |
-| Icons | react-icons v5 (Font Awesome subset) |
-| Charts | Recharts |
-| Toasts | Sonner |
-| Storage | Google Drive API v3 (bills + attachments) |
-| Auth | OAuth 2.0 refresh-token **or** Google Service Account JWT |
-| Testing | Vitest + @testing-library/react + jsdom |
-| PWA | vite-plugin-pwa + Workbox |
-| Package manager | pnpm |
+| Layer           | Library / Tool                                                           |
+| --------------- | ------------------------------------------------------------------------ |
+| Framework       | [TanStack Start](https://tanstack.com/start) v1 (SSR + Server Functions) |
+| Routing         | [TanStack Router](https://tanstack.com/router) v1 (file-based)           |
+| UI              | React 19, Radix UI primitives, Tailwind CSS v4                           |
+| State           | Redux Toolkit + redux-persist (UI preferences only)                      |
+| Icons           | react-icons v5 (Font Awesome subset)                                     |
+| Charts          | Recharts                                                                 |
+| Toasts          | Sonner                                                                   |
+| Storage         | Google Drive API v3 (bills + attachments)                                |
+| Auth            | OAuth 2.0 refresh-token **or** Google Service Account JWT                |
+| Testing         | Vitest + @testing-library/react + jsdom                                  |
+| PWA             | vite-plugin-pwa + Workbox                                                |
+| Package manager | pnpm                                                                     |
 
 ---
 
@@ -217,12 +217,12 @@ Folders are created automatically on first upload. Bills are never stored locall
 
 ## Environment Variables Reference
 
-| Variable | Required | Description |
-|---|---|---|
+| Variable                      | Required   | Description                   |
+| ----------------------------- | ---------- | ----------------------------- |
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | One of A/B | Full service account key JSON |
-| `GOOGLE_CLIENT_ID` | One of A/B | OAuth 2.0 client ID |
-| `GOOGLE_CLIENT_SECRET` | One of A/B | OAuth 2.0 client secret |
-| `GOOGLE_REFRESH_TOKEN` | One of A/B | Long-lived refresh token |
+| `GOOGLE_CLIENT_ID`            | One of A/B | OAuth 2.0 client ID           |
+| `GOOGLE_CLIENT_SECRET`        | One of A/B | OAuth 2.0 client secret       |
+| `GOOGLE_REFRESH_TOKEN`        | One of A/B | Long-lived refresh token      |
 
 ---
 
@@ -230,14 +230,14 @@ Folders are created automatically on first upload. Bills are never stored locall
 
 **Hari Krishna Anem**
 
-| | |
-|---|---|
-| Email | [anemharikrishna@gmail.com](mailto:anemharikrishna@gmail.com) |
-| Phone | [+91 98856 99666](tel:+919885699666) |
-| GitHub | [github.com/HariKrishna-9885699666](https://github.com/HariKrishna-9885699666) |
-| LinkedIn | [linkedin.com/in/anemharikrishna](https://linkedin.com/in/anemharikrishna) |
-| Blog | [hashnode.com/@HariKrishna-9885699666](https://hashnode.com/@HariKrishna-9885699666) |
-| Portfolio | [harikrishna.is-a-good.dev](https://harikrishna.is-a-good.dev) |
+|           |                                                                                      |
+| --------- | ------------------------------------------------------------------------------------ |
+| Email     | [anemharikrishna@gmail.com](mailto:anemharikrishna@gmail.com)                        |
+| Phone     | [+91 98856 99666](tel:+919885699666)                                                 |
+| GitHub    | [github.com/HariKrishna-9885699666](https://github.com/HariKrishna-9885699666)       |
+| LinkedIn  | [linkedin.com/in/anemharikrishna](https://linkedin.com/in/anemharikrishna)           |
+| Blog      | [hashnode.com/@HariKrishna-9885699666](https://hashnode.com/@HariKrishna-9885699666) |
+| Portfolio | [harikrishna.is-a-good.dev](https://harikrishna.is-a-good.dev)                       |
 
 ---
 

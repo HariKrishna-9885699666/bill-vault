@@ -22,11 +22,14 @@ export const Route = createFileRoute("/reports/")({
 
 function ReportsPage() {
   const reports = useAppSelector((s) => s.reports?.items || []);
-  const filters = useAppSelector((s) => s.ui.reportFilters || {
-    search: "",
-    reportType: "all",
-    patient: "all",
-  });
+  const filters = useAppSelector(
+    (s) =>
+      s.ui.reportFilters || {
+        search: "",
+        reportType: "all",
+        patient: "all",
+      },
+  );
 
   const filtered = useMemo(() => {
     const q = (filters.search || "").trim().toLowerCase();
